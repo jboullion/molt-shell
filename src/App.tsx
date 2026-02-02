@@ -1,57 +1,55 @@
 import { useState, useEffect } from 'react';
-import { PairingFlow } from './components/PairingFlow';
-import { Avatar3D } from './components/Avatar3D';
-import { ChatInterface } from './components/ChatInterface';
-import { AvatarCustomizer } from './components/AvatarCustomizer';
 import { useSessionStore } from './stores/useSessionStore';
+import PairingFlow from './components/PairingFlow';
+import Avatar3D from './components/Avatar3D';
+import ChatInterface from './components/ChatInterface';
+import AvatarCustomizer from './components/AvatarCustomizer';
 
 function App() {
-  const [isPaired, setIsPaired] = useState(false);
   const { session, avatar } = useSessionStore();
-
-  useEffect(() => {
-    if (session) {
-      setIsPaired(true);
-    }
-  }, [session]);
-
-  if (!isPaired) {
-    return <PairingFlow onPaired={() => setIsPaired(true)} />;
-  }
+  const [showCustomizer, setShowCustomizer] = useState(false);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-molt-900 via-molt-800 to-molt-900 text-white">
-      {/* Header */}
-      <div className="bg-molt-800/30 backdrop-blur-lg border-b border-molt-600/30 px-6 py-4">
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold">🐚 Molt Shell</h1>
-            <p className="text-sm text-molt-400">
-              Connected: {session?.pairing_code}
-            </p>
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
+      {!session ? (
+        <PairingFlow />
+      ) : (
+        <div className="relative h-screen overflow-hidden">
+          {/* 3D Avatar */}
+          <div className="absolute inset-0 z-0">
+            <Avatar3D avatar={avatar} />
           </div>
-          {avatar && (
-            <div className="text-right">
-              <p className="font-semibold">{avatar.agent_name || 'Agent'}</p>
-              <p className="text-xs text-molt-400">
-                {session?.agent_connected ? '🟢 Online' : '🟡 Waiting...'}
-              </p>
+
+          {/* UI Overlays */}
+          <div className="relative z-10 flex flex-col h-full pointer-events-none">
+            {/* Top Bar */}
+            <div className="p-4 flex justify-between items-center pointer-events-auto">
+              <div className="bg-black/30 backdrop-blur-md rounded-lg px-4 py-2 text-white">
+                <span className="text-sm opacity-70">Connected:</span>
+                <span className="ml-2 font-bold">{session.pairing_code}</span>
+              </div>
+              <button
+                onClick={() => setShowCustomizer(!showCustomizer)}
+                className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg transition"
+              >
+                {showCustomizer ? 'Close' : 'Customize Avatar'}
+              </button>
             </div>
-          )}
-        </div>
-      </div>
 
-      {/* Main Layout */}
-      <div className="max-w-7xl mx-auto p-6 grid grid-cols-1 lg:grid-cols-2 gap-6 h-[calc(100vh-100px)]">
-        {/* Avatar Viewer */}
-        <div className="relative bg-molt-900/30 backdrop-blur-lg rounded-xl border border-molt-600/30 overflow-hidden">
-          <Avatar3D avatar={avatar} />
-          <AvatarCustomizer />
-        </div>
+            {/* Customizer Panel */}
+            {showCustomizer && (
+              <div className="pointer-events-auto">
+                <AvatarCustomizer />
+              </div>
+            )}
 
-        {/* Chat Interface */}
-        <ChatInterface />
-      </div>
+            {/* Chat Interface - Bottom */}
+            <div className="mt-auto pointer-events-auto">
+              <ChatInterface />
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

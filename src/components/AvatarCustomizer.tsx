@@ -1,134 +1,162 @@
-import { useState } from 'react';
 import { useSessionStore } from '../stores/useSessionStore';
 
 const SHAPES = ['sphere', 'cube', 'cylinder'];
-const PRESET_COLORS = [
-  '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7',
-  '#DFE6E9', '#74B9FF', '#A29BFE', '#FD79A8', '#FDCB6E'
+const COLORS = [
+  { name: 'Red', value: '#FF6B6B' },
+  { name: 'Orange', value: '#FFA500' },
+  { name: 'Yellow', value: '#FFD93D' },
+  { name: 'Green', value: '#6BCF7F' },
+  { name: 'Blue', value: '#4ECDC4' },
+  { name: 'Purple', value: '#9B59B6' },
+  { name: 'Pink', value: '#FF69B4' },
+  { name: 'White', value: '#FFFFFF' },
 ];
 
-export function AvatarCustomizer() {
+export default function AvatarCustomizer() {
   const { avatar, updateAvatar } = useSessionStore();
-  const [isOpen, setIsOpen] = useState(false);
 
   if (!avatar) return null;
 
-  const handleUpdate = (part: 'head' | 'body' | 'hands', key: 'shape' | 'color', value: string) => {
+  const updatePart = (part: 'head' | 'body' | 'hands', key: 'shape' | 'color', value: string) => {
     updateAvatar({
       [part]: { ...avatar[part], [key]: value }
     });
   };
 
   return (
-    <div className="absolute top-4 right-4">
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        className="bg-molt-700 hover:bg-molt-600 text-white px-4 py-2 rounded-lg font-semibold transition-colors"
-      >
-        {isOpen ? 'Close' : 'Customize Avatar'}
-      </button>
-
-      {isOpen && (
-        <div className="mt-2 bg-molt-800/95 backdrop-blur-lg border border-molt-600/30 rounded-xl p-6 w-80">
-          <h3 className="text-lg font-bold text-white mb-4">Customize Avatar</h3>
-
-          {/* Head */}
-          <div className="mb-6">
-            <label className="block text-sm font-semibold text-molt-300 mb-2">Head</label>
-            <div className="flex gap-2 mb-2">
-              {SHAPES.map((shape) => (
-                <button
-                  key={shape}
-                  onClick={() => handleUpdate('head', 'shape', shape)}
-                  className={`px-3 py-1 rounded-lg capitalize ${
-                    avatar.head.shape === shape
-                      ? 'bg-molt-500 text-white'
-                      : 'bg-molt-700 text-molt-300 hover:bg-molt-600'
-                  }`}
-                >
-                  {shape}
-                </button>
-              ))}
+    <div className="bg-black/50 backdrop-blur-md rounded-lg p-6 mx-4 max-w-2xl">
+      <h2 className="text-2xl font-bold text-white mb-4">Customize Avatar</h2>
+      
+      <div className="space-y-6">
+        {/* Head */}
+        <div>
+          <h3 className="text-lg font-bold text-purple-300 mb-2">Head</h3>
+          <div className="flex gap-4">
+            <div>
+              <label className="text-sm text-white/70">Shape</label>
+              <div className="flex gap-2 mt-1">
+                {SHAPES.map(shape => (
+                  <button
+                    key={shape}
+                    onClick={() => updatePart('head', 'shape', shape)}
+                    className={`px-3 py-1 rounded capitalize ${
+                      avatar.head.shape === shape
+                        ? 'bg-purple-600 text-white'
+                        : 'bg-slate-700 text-white/70'
+                    }`}
+                  >
+                    {shape}
+                  </button>
+                ))}
+              </div>
             </div>
-            <div className="grid grid-cols-5 gap-2">
-              {PRESET_COLORS.map((color) => (
-                <button
-                  key={color}
-                  onClick={() => handleUpdate('head', 'color', color)}
-                  className={`w-10 h-10 rounded-lg border-2 ${
-                    avatar.head.color === color ? 'border-white' : 'border-molt-600'
-                  }`}
-                  style={{ backgroundColor: color }}
-                />
-              ))}
-            </div>
-          </div>
-
-          {/* Body */}
-          <div className="mb-6">
-            <label className="block text-sm font-semibold text-molt-300 mb-2">Body</label>
-            <div className="flex gap-2 mb-2">
-              {SHAPES.map((shape) => (
-                <button
-                  key={shape}
-                  onClick={() => handleUpdate('body', 'shape', shape)}
-                  className={`px-3 py-1 rounded-lg capitalize ${
-                    avatar.body.shape === shape
-                      ? 'bg-molt-500 text-white'
-                      : 'bg-molt-700 text-molt-300 hover:bg-molt-600'
-                  }`}
-                >
-                  {shape}
-                </button>
-              ))}
-            </div>
-            <div className="grid grid-cols-5 gap-2">
-              {PRESET_COLORS.map((color) => (
-                <button
-                  key={color}
-                  onClick={() => handleUpdate('body', 'color', color)}
-                  className={`w-10 h-10 rounded-lg border-2 ${
-                    avatar.body.color === color ? 'border-white' : 'border-molt-600'
-                  }`}
-                  style={{ backgroundColor: color }}
-                />
-              ))}
-            </div>
-          </div>
-
-          {/* Hands */}
-          <div className="mb-4">
-            <label className="block text-sm font-semibold text-molt-300 mb-2">Hands</label>
-            <div className="flex gap-2 mb-2">
-              {SHAPES.map((shape) => (
-                <button
-                  key={shape}
-                  onClick={() => handleUpdate('hands', 'shape', shape)}
-                  className={`px-3 py-1 rounded-lg capitalize ${
-                    avatar.hands.shape === shape
-                      ? 'bg-molt-500 text-white'
-                      : 'bg-molt-700 text-molt-300 hover:bg-molt-600'
-                  }`}
-                >
-                  {shape}
-                </button>
-              ))}
-            </div>
-            <div className="grid grid-cols-5 gap-2">
-              {PRESET_COLORS.map((color) => (
-                <button
-                  key={color}
-                  onClick={() => handleUpdate('hands', 'color', color)}
-                  className={`w-10 h-10 rounded-lg border-2 ${
-                    avatar.hands.color === color ? 'border-white' : 'border-molt-600'
-                  }`}
-                  style={{ backgroundColor: color }}
-                />
-              ))}
+            <div>
+              <label className="text-sm text-white/70">Color</label>
+              <div className="flex gap-2 mt-1">
+                {COLORS.map(color => (
+                  <button
+                    key={color.value}
+                    onClick={() => updatePart('head', 'color', color.value)}
+                    className={`w-8 h-8 rounded-full border-2 ${
+                      avatar.head.color === color.value
+                        ? 'border-white'
+                        : 'border-transparent'
+                    }`}
+                    style={{ backgroundColor: color.value }}
+                    title={color.name}
+                  />
+                ))}
+              </div>
             </div>
           </div>
         </div>
-      )}
+
+        {/* Body */}
+        <div>
+          <h3 className="text-lg font-bold text-purple-300 mb-2">Body</h3>
+          <div className="flex gap-4">
+            <div>
+              <label className="text-sm text-white/70">Shape</label>
+              <div className="flex gap-2 mt-1">
+                {SHAPES.map(shape => (
+                  <button
+                    key={shape}
+                    onClick={() => updatePart('body', 'shape', shape)}
+                    className={`px-3 py-1 rounded capitalize ${
+                      avatar.body.shape === shape
+                        ? 'bg-purple-600 text-white'
+                        : 'bg-slate-700 text-white/70'
+                    }`}
+                  >
+                    {shape}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div>
+              <label className="text-sm text-white/70">Color</label>
+              <div className="flex gap-2 mt-1">
+                {COLORS.map(color => (
+                  <button
+                    key={color.value}
+                    onClick={() => updatePart('body', 'color', color.value)}
+                    className={`w-8 h-8 rounded-full border-2 ${
+                      avatar.body.color === color.value
+                        ? 'border-white'
+                        : 'border-transparent'
+                    }`}
+                    style={{ backgroundColor: color.value }}
+                    title={color.name}
+                  />
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Hands */}
+        <div>
+          <h3 className="text-lg font-bold text-purple-300 mb-2">Hands</h3>
+          <div className="flex gap-4">
+            <div>
+              <label className="text-sm text-white/70">Shape</label>
+              <div className="flex gap-2 mt-1">
+                {SHAPES.map(shape => (
+                  <button
+                    key={shape}
+                    onClick={() => updatePart('hands', 'shape', shape)}
+                    className={`px-3 py-1 rounded capitalize ${
+                      avatar.hands.shape === shape
+                        ? 'bg-purple-600 text-white'
+                        : 'bg-slate-700 text-white/70'
+                    }`}
+                  >
+                    {shape}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div>
+              <label className="text-sm text-white/70">Color</label>
+              <div className="flex gap-2 mt-1">
+                {COLORS.map(color => (
+                  <button
+                    key={color.value}
+                    onClick={() => updatePart('hands', 'color', color.value)}
+                    className={`w-8 h-8 rounded-full border-2 ${
+                      avatar.hands.color === color.value
+                        ? 'border-white'
+                        : 'border-transparent'
+                    }`}
+                    style={{ backgroundColor: color.value }}
+                    title={color.name}
+                  />
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
