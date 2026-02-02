@@ -2,13 +2,22 @@ import { useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
 import { Mesh } from 'three'
 
-export function Avatar(props: any) {
+export function Avatar({ speaking, ...props }: any) {
   const meshRef = useRef<Mesh>(null)
 
   useFrame((state, delta) => {
     if (meshRef.current) {
-      // Gentle floating animation
-      meshRef.current.position.y = Math.sin(state.clock.elapsedTime) * 0.1
+      // Gentle floating animation (Base)
+      const floatY = Math.sin(state.clock.elapsedTime) * 0.1
+      
+      // Talking animation (High frequency jitter/scale)
+      let talkScale = 1
+      if (speaking) {
+         talkScale = 1 + Math.sin(state.clock.elapsedTime * 20) * 0.05
+      }
+
+      meshRef.current.position.y = floatY
+      meshRef.current.scale.setScalar(talkScale)
     }
   })
 
@@ -17,7 +26,7 @@ export function Avatar(props: any) {
       {/* Head */}
       <mesh position={[0, 1.5, 0]}>
         <sphereGeometry args={[0.5, 32, 32]} />
-        <meshStandardMaterial color="hotpink" />
+        <meshStandardMaterial color={speaking ? "#ff00ff" : "hotpink"} emissive={speaking ? "#440044" : "black"} />
       </mesh>
       
       {/* Body */}
