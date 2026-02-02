@@ -5,7 +5,7 @@ import { Mesh } from 'three'
 export function Avatar({ speaking, ...props }: any) {
   const meshRef = useRef<Mesh>(null)
 
-  useFrame((state, delta) => {
+  useFrame((state) => {
     if (meshRef.current) {
       // Gentle floating animation (Base)
       const floatY = Math.sin(state.clock.elapsedTime) * 0.1
