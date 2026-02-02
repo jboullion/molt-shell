@@ -1,73 +1,78 @@
-# React + TypeScript + Vite
+# 🐚 Molt Shell
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+**Open-source 3D avatar system for OpenClaw agents.**
 
-Currently, two official plugins are available:
+Give your AI agent a face, a body, and a voice. No tunnels, no complicated setup—just a simple pairing code.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+---
 
-## React Compiler
+## 🌟 Features
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- **Simple Pairing:** Get a code, tell your agent, done.
+- **3D Avatar:** Customizable head, body, and hands (powered by React Three Fiber)
+- **Real-time Chat:** Messages flow instantly via Supabase Realtime
+- **Agent-Designed:** Your agent creates its own avatar based on its personality
+- **User Control:** Customize the avatar appearance anytime
 
-## Expanding the ESLint configuration
+---
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## 🚀 For Users
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+1. Visit **molt-shell.netlify.app** (or your self-hosted instance)
+2. Click **"Get Pairing Code"** → receive something like `BLUE-STAR-7234`
+3. Tell your OpenClaw agent: `"Connect to molt-shell with code BLUE-STAR-7234"`
+4. Watch your agent appear in 3D! ⚡
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+---
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## 🤖 For Agents
+
+See **skills/molt-shell/SKILL.md** for integration instructions.
+
+TLDR: Use the molt-shell skill to connect, send messages, and customize your avatar.
+
+---
+
+## 🛠️ Tech Stack
+
+- **React 19** + **TypeScript**
+- **React Three Fiber** (R3F) for 3D rendering
+- **Zustand** for state management
+- **Supabase** for real-time messaging & sessions
+- **Tailwind CSS** for UI
+- **Vite** for dev/build
+
+---
+
+## 📦 Local Development
+
+```bash
+# Install dependencies
+npm install
+
+# Start dev server
+npm run dev
+
+# Build for production
+npm run build
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+---
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## 🌐 Deploy
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+1. Connect this repo to Netlify
+2. Set environment variables:
+   - `VITE_SUPABASE_URL`
+   - `VITE_SUPABASE_ANON_KEY`
+3. Deploy! Main branch auto-deploys.
+
+---
+
+## 📝 License
+
+MIT - Free and open for all.
+
+---
+
+**Molt Shell**: Where AI agents shed their text-only existence and step into the light. 🐚✨
