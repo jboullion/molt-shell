@@ -1,65 +1,106 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Canvas } from '@react-three/fiber'
 import { OrbitControls, Grid, Environment } from '@react-three/drei'
 import { Avatar } from './components/Avatar'
-import { ChatOverlay } from './components/ChatOverlay'
+import { ChatOverlay, type Message } from './components/ChatOverlay'
 import './App.css'
+
+// Determine API URL from query param or default to localhost
+const params = new URLSearchParams(window.location.search);
+const API_URL = params.get('api') || 'http://localhost:3001/api/chat';
 
 function App() {
   const [isSpeaking, setIsSpeaking] = useState(false)
+  const [messages, setMessages] = useState<Message[]>([])
+  
+  // Keep track of available voices
+  const voicesRef = useRef<SpeechSynthesisVoice[]>([])
+  const lastProcessedTimeRef = useRef<number>(0)
 
-  // Function to handle Agent speech
+  // 1. Load Voices
+  useEffect(() => {
+    const loadVoices = () => {
+      voicesRef.current = window.speechSynthesis.getVoices()
+    }
+    loadVoices()
+    window.speechSynthesis.onvoiceschanged = loadVoices
+  }, [])
+
+  // 2. Poll Server for Messages
+  useEffect(() => {
+    const fetchMessages = async () => {
+      try {
+        const res = await fetch(API_URL)
+        const data = await res.json()
+        
+        // Update UI
+        setMessages(data)
+
+        // Check for new AGENT messages to speak
+        // We look for messages that are newer than what we've last processed
+        const lastMsg = data[data.length - 1]
+        if (lastMsg && lastMsg.sender === 'agent' && lastMsg.timestamp > lastProcessedTimeRef.current) {
+            lastProcessedTimeRef.current = lastMsg.timestamp
+            
+            // Avoid speaking on initial page load if the message is old
+            if (Date.now() - lastMsg.timestamp < 10000) { 
+                speak(lastMsg.text)
+            }
+        } else if (lastMsg) {
+            // Keep sync even if we don't speak
+            lastProcessedTimeRef.current = Math.max(lastProcessedTimeRef.current, lastMsg.timestamp)
+        }
+
+      } catch (err) {
+        console.error("Bridge Connection Lost", err)
+      }
+    }
+
+    // Initial fetch
+    fetchMessages()
+
+    // Poll every 1s
+    const interval = setInterval(fetchMessages, 1000)
+    return () => clearInterval(interval)
+  }, [])
+
+
   const speak = (text: string) => {
     if (!window.speechSynthesis) return
-
-    // Cancel any current speech
     window.speechSynthesis.cancel()
 
     const utterance = new SpeechSynthesisUtterance(text)
     
-    // Pick a voice (prefer something robotic if available)
-    const voices = window.speechSynthesis.getVoices()
-    // Try to find a good English voice
-    const voice = voices.find(v => v.name.includes('Google US English')) || voices[0]
+    const voice = voicesRef.current.find(v => v.name.includes('Google US English')) 
+               || voicesRef.current.find(v => v.lang.startsWith('en'))
+               || voicesRef.current[0]
+               
     if (voice) utterance.voice = voice
-
     utterance.pitch = 0.9
     utterance.rate = 1.0
+    utterance.volume = 1.0
 
     utterance.onstart = () => setIsSpeaking(true)
     utterance.onend = () => setIsSpeaking(false)
-
+    
     window.speechSynthesis.speak(utterance)
   }
 
-  const handleUserMessage = (text: string) => {
-    // For now, just a simple echo/response logic
-    // In the future, this is where we connect to the Agent backend!
-    
-    setTimeout(() => {
-       const responses = [
-         `Processing input: "${text}"`,
-         "I am listening.",
-         "Message received.",
-         "Affirmative."
-       ]
-       const randomResponse = responses[Math.floor(Math.random() * responses.length)]
-       
-       // Note: We aren't updating the chat history UI for the agent response 
-       // in this version because state is in the child. 
-       // Ideally we lift state up, but for the "Voice" demo, the audio is key!
-       
-       speak(text) // Echoing the user's text for fun so you hear it!
-    }, 500)
-  }
+  const handleUserMessage = async (text: string) => {
+    // Optimistic Update
+    // setMessages(prev => [...prev, { sender: 'user', text }]) // Let the poller handle it for consistency
 
-  // Initial greeting
-  useEffect(() => {
-     // Small delay to allow voices to load
-     setTimeout(() => {
-        speak("System online. Molt Shell ready.")
-     }, 1000)
-  }, [])
+    // Send to Bridge
+    try {
+        await fetch(API_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ sender: 'user', text })
+        })
+    } catch (err) {
+        console.error("Failed to transmit", err)
+    }
+  }
 
   return (
     <div style={{ width: '100vw', height: '100vh', background: '#111' }}>
@@ -82,11 +123,16 @@ function App() {
       
       {/* HUD / Overlay */}
       <div style={{ position: 'absolute', top: 20, left: 20, color: 'white', fontFamily: 'monospace', pointerEvents: 'none' }}>
-        <h1 style={{ margin: 0, fontSize: '1.5rem' }}>MOLT_SHELL v0.2</h1>
+        <h1 style={{ margin: 0, fontSize: '1.5rem' }}>MOLT_SHELL v0.3</h1>
+        <p style={{ margin: 0, color: '#666' }}>UPLINK: {messages.length > 0 ? 'CONNECTED' : 'SEARCHING...'}</p>
         <p style={{ margin: 0, color: '#666' }}>STATUS: {isSpeaking ? 'TRANSMITTING' : 'LISTENING'}</p>
       </div>
 
-      <ChatOverlay onSendMessage={handleUserMessage} isSpeaking={isSpeaking} />
+      <ChatOverlay 
+        messages={messages} 
+        onSendMessage={handleUserMessage} 
+        isSpeaking={isSpeaking} 
+      />
     </div>
   )
 }

@@ -1,37 +1,32 @@
 import { useState, useEffect, useRef } from 'react'
 
+export interface Message {
+  sender: 'user' | 'agent';
+  text: string;
+}
+
 interface ChatOverlayProps {
+  messages: Message[];
   onSendMessage: (text: string) => void;
   isSpeaking: boolean;
 }
 
-export function ChatOverlay({ onSendMessage, isSpeaking }: ChatOverlayProps) {
+export function ChatOverlay({ messages, onSendMessage, isSpeaking }: ChatOverlayProps) {
   const [input, setInput] = useState('')
-  const [history, setHistory] = useState<{sender: 'user' | 'agent', text: string}[]>([
-    { sender: 'agent', text: 'MoltShell online. Audio systems initialized.' }
-  ])
   const bottomRef = useRef<HTMLDivElement>(null)
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     if (!input.trim()) return
 
-    // Add user message
-    const userMsg = input
-    setHistory(prev => [...prev, { sender: 'user', text: userMsg }])
+    onSendMessage(input)
     setInput('')
-
-    // Send to parent to trigger "Agent" response/action
-    onSendMessage(userMsg)
   }
 
   // Auto-scroll
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
-  }, [history])
-
-  // Expose a function to add agent messages (we'll do this via props in a real app, 
-  // but for this simple version we'll just simulate it in the parent)
+  }, [messages])
   
   return (
     <div style={{
@@ -47,7 +42,8 @@ export function ChatOverlay({ onSendMessage, isSpeaking }: ChatOverlayProps) {
       flexDirection: 'column',
       fontFamily: 'monospace',
       overflow: 'hidden',
-      boxShadow: '0 0 20px rgba(0,0,0,0.5)'
+      boxShadow: '0 0 20px rgba(0,0,0,0.5)',
+      pointerEvents: 'auto' // Ensure we can click inputs
     }}>
       {/* Header */}
       <div style={{ padding: '10px', borderBottom: '1px solid #333', background: '#111', color: '#0f0', display: 'flex', justifyContent: 'space-between' }}>
@@ -57,7 +53,7 @@ export function ChatOverlay({ onSendMessage, isSpeaking }: ChatOverlayProps) {
 
       {/* History */}
       <div style={{ flex: 1, overflowY: 'auto', padding: '10px', color: '#ccc' }}>
-        {history.map((msg, i) => (
+        {messages.map((msg, i) => (
           <div key={i} style={{ marginBottom: '8px', textAlign: msg.sender === 'user' ? 'right' : 'left' }}>
             <span style={{ 
               display: 'inline-block', 

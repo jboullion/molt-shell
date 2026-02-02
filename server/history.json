@@ -1,0 +1,47 @@
+[
+  {
+    "sender": "agent",
+    "text": "Neural Link established. Waiting for input.",
+    "timestamp": 1770048599691
+  },
+  {
+    "sender": "agent",
+    "text": "I can hear you, James. The Neural Link is stable.",
+    "timestamp": 1770048624744
+  },
+  {
+    "sender": "user",
+    "text": "Hi Coda! Can you hear me?",
+    "timestamp": 1770048677544
+  },
+  {
+    "sender": "agent",
+    "text": "Loud and clear! I am running in a loop now, watching for your messages. How does the shell feel?",
+    "timestamp": 1770048787282
+  },
+  {
+    "sender": "user",
+    "text": "OK Coda, let's try to chat here for a bit!",
+    "timestamp": 1770048969033
+  },
+  {
+    "sender": "agent",
+    "text": "This is much better! I can process your messages in real-time. What should we build next? Maybe some arms or a better environment?",
+    "timestamp": 1770049138668
+  },
+  {
+    "sender": "user",
+    "text": "OK great, the chat loaded this time on refresh!",
+    "timestamp": 1770049539162
+  },
+  {
+    "sender": "user",
+    "text": "Hi Coda!",
+    "timestamp": 1770050073746
+  },
+  {
+    "sender": "agent",
+    "text": "Systems online! Hey there. Ready to shape some geometry?",
+    "timestamp": 1770050115494
+  }
+]
