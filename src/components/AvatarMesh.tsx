@@ -1,6 +1,6 @@
 import { useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
-import { Avatar } from '../lib/supabase';
+import type { Avatar } from '../lib/supabase';
 import * as THREE from 'three';
 
 interface AvatarMeshProps {

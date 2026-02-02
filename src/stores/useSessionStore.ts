@@ -1,5 +1,6 @@
 import { create } from 'zustand';
-import { supabase, Session, Avatar, Message } from '../lib/supabase';
+import { supabase } from '../lib/supabase';
+import type { Session, Avatar, Message } from '../lib/supabase';
 
 interface SessionStore {
   session: Session | null;

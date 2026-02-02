@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useSessionStore } from './stores/useSessionStore';
 import PairingFlow from './components/PairingFlow';
 import Avatar3D from './components/Avatar3D';

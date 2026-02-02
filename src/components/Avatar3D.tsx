@@ -1,6 +1,6 @@
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, PerspectiveCamera } from '@react-three/drei';
-import { Avatar } from '../lib/supabase';
+import type { Avatar } from '../lib/supabase';
 import AvatarMesh from './AvatarMesh';
 
 interface Avatar3DProps {
